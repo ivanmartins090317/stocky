@@ -1,12 +1,14 @@
 import { PlusIcon } from "lucide-react"
 import { Button } from "../_components/ui/button"
 import { DataTable} from "../_components/ui/data-table"
-import { db } from "../_lib/prisma"
 import { ProductTableCollumns } from "../products/_components/table-collumn"
+import { getDataProduct } from "../_data-acess/product/getData-product"
+import AddFormButton from "./_components/add-form-button"
 
 
 const ProductPage = async () =>{
-  const products = await db.product.findMany({})
+  // CAMADA DO BANCO DE DADOS
+  const products = await getDataProduct()
   return (
     <div className="w-full bg-white m-8 p-8 rounded-md">
     {/* HEADER E TABELA */}
@@ -15,10 +17,7 @@ const ProductPage = async () =>{
           <span className="text-gray-500 text-sm">Produtos</span>
           <h2 className="font-bold font-md">Gestão de produtos</h2>
       </div>
-      <Button className="gap-2">
-        <PlusIcon size={12}/>
-        Novo produto
-      </Button>
+       <AddFormButton/>
      </div>
       <DataTable columns={ProductTableCollumns} data={products}/>
     </div>
