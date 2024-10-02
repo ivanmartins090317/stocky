@@ -1,53 +1,49 @@
 "use client"
 
+import { createProduct } from "@/app/_actions/product/create-product"
+import { CreateProductSchema, createProductSchema } from "@/app/_actions/product/create-product/schema"
 import { Button } from "@/app/_components/ui/button"
 import {
   Dialog,
   DialogClose,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/app/_components/ui/dialog"
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/app/_components/ui/form"
+import { Form, FormControl,  FormField, FormItem, FormLabel, FormMessage } from "@/app/_components/ui/form"
 import { Input } from "@/app/_components/ui/input"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { log } from "console"
-import { PlusIcon } from "lucide-react"
+import { Loader2Icon, PlusIcon } from "lucide-react"
+import { useState } from "react"
 import { useForm} from "react-hook-form"
-import { z } from "zod"
-
-const formSchema = z.object({
-  name: z.string().min(1, {
-    message: "O nome do produto é obrigatorio.",
-  }),
-  price: z.number().min(0.01,{
-    message: "O preço do produto é obrigatório"
-  }),
-  stock: z.number().int().min(0,{
-    message: "A quantidade em estoque é obrigatoria"
-  })
-})
-
- type FormSchema= z.infer<typeof formSchema>
+import { NumericFormat } from "react-number-format";
 
 const AddFormButton = () =>{
-  const form = useForm <FormSchema>({
-    resolver: zodResolver(formSchema),
+ const [dialogIsOpen, setDialogIsOpen] = useState(true)
+
+  const form = useForm <CreateProductSchema>({
+    shouldUnregister:true,
+    resolver: zodResolver(createProductSchema),
     defaultValues: {
       name: "",
       price:0,
       stock:1,
     },
   })
- const onSubmit = (data: FormSchema) =>{
-  console.log({data});
+ const onSubmit = async (data: CreateProductSchema) =>{
+  try {
+    await createProduct(data)
+    setDialogIsOpen(false);
+  } catch (error) {
+    console.log({message: error});
+    
+  }
   
  }
   return(
-    <Dialog>
+    <Dialog open={dialogIsOpen} onOpenChange={setDialogIsOpen}>
       <DialogTrigger asChild>
       <Button className="gap-2">
         <PlusIcon size={12}/>
@@ -83,7 +79,20 @@ const AddFormButton = () =>{
               <FormItem>
                 <FormLabel>Preço do produto</FormLabel>
                 <FormControl>
-                  <Input placeholder="insira o preço do produto..." {...field} />
+                <NumericFormat
+                    thousandSeparator="."
+                    decimalSeparator=","
+                    fixedDecimalScale
+                    decimalScale={2}
+                    prefix="R$ "
+                    allowNegative={false}
+                    customInput={Input}
+                    onValueChange={(values) =>
+                    field.onChange(values.floatValue)
+                    }
+                    {...field}
+                    onChange={() => {}}
+                    />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -108,7 +117,15 @@ const AddFormButton = () =>{
             <DialogClose asChild>
               <Button variant="secondary">Cancelar</Button>
             </DialogClose>
-            <Button type="submit">Adicionar</Button>
+            <Button type="submit" 
+            className="gap-1.5"
+            disabled={form.formState.isSubmitting}
+            >
+              {form.formState.isSubmitting && (
+                <Loader2Icon className="animate-spin" size={16} />
+              ) }
+              Adicionar
+            </Button>
           </DialogFooter>
         </form>
         </Form>
@@ -119,3 +136,4 @@ const AddFormButton = () =>{
 
 
 export default AddFormButton
+
