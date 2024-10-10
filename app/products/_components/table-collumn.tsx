@@ -3,7 +3,7 @@
 import { Product } from "@prisma/client"
 import { ColumnDef } from "@tanstack/react-table"
 import { Badge } from "../../_components/ui/badge"
-import { CircleIcon } from "lucide-react"
+import { CircleIcon, Currency } from "lucide-react"
 import ProductTableDropdownMenu from "./table-dropdown-menu"
 
 
@@ -26,6 +26,13 @@ export const ProductTableCollumns: ColumnDef<Product>[] = [
   {
     accessorKey: "price",
     header: "Preço",
+    cell: row =>{
+      const product = row.row.original
+      return Intl.NumberFormat("pt-BR",{
+        style: "currency",
+        currency: "BRL"
+      }).format(Number(product.price))
+    }
   },
   {
     accessorKey: "stock",
