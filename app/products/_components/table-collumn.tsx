@@ -3,8 +3,8 @@
 import { Product } from "@prisma/client"
 import { ColumnDef } from "@tanstack/react-table"
 import { Badge } from "../../_components/ui/badge"
-import { log } from "console"
 import { CircleIcon } from "lucide-react"
+import ProductTableDropdownMenu from "./table-dropdown-menu"
 
 
 
@@ -48,5 +48,10 @@ export const ProductTableCollumns: ColumnDef<Product>[] = [
           {label}
        </Badge>
     }
+  },
+  {
+    accessorKey:"Actions",
+    header: "Ações",
+    cell: row => <ProductTableDropdownMenu product={row.row.original}/>
   },
 ]
