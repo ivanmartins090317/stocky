@@ -26,7 +26,7 @@ const Sale = async () =>{
         <SheetTrigger asChild>
          <Button>Nova venda</Button>    
         </SheetTrigger>
-        <UpsertSheetDialogContent productOptions={productOptions}/>
+        <UpsertSheetDialogContent products={products} productOptions={productOptions}/>
       </Sheet>
       </div>
       {/* <DataTable columns={ProductTableCollumns} data={products}/> */}
