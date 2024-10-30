@@ -58,6 +58,14 @@ const UpsertSheetDialogContent = ({products, productOptions}: UpsertSheetContent
    setSelectedProducts((currentProduct) =>{
     const duplicatedProduct = currentProduct.find(product => product.id === isSelectedProduct.id)
     if(duplicatedProduct){
+      const productOutOfStock = duplicatedProduct.quantity + data.quantity > isSelectedProduct.stock
+      if(productOutOfStock){
+        form.setError("quantity", {
+          message:"Quantidade indisponivel em estoque"
+        })
+        return currentProduct;
+      }
+      form.reset()
        return currentProduct.map(product => {
         if(product.id === isSelectedProduct.id){
          return {
@@ -68,6 +76,14 @@ const UpsertSheetDialogContent = ({products, productOptions}: UpsertSheetContent
         return product
        })
       }
+      const productIsOutOfStock = data.quantity > isSelectedProduct.stock
+      if(productIsOutOfStock){
+        form.setError("quantity", {
+          message:"Quantidade indisponivel em estoque"
+        })
+        return currentProduct;
+      }
+      form.reset()
       return [
        ...currentProduct,
        {
@@ -77,7 +93,6 @@ const UpsertSheetDialogContent = ({products, productOptions}: UpsertSheetContent
        }
       ]
    })
-   form.reset() 
   }
 
   const onDelete = (productId: string) => {
