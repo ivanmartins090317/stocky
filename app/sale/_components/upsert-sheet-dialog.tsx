@@ -9,10 +9,11 @@ import {Table,TableCaption, TableHeader, TableRow, TableHead, TableBody, TableCe
 import formatCurrency from "@/app/helpers/currency";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Product } from "@prisma/client";
-import { PlusIcon} from "lucide-react";
+import { MoreHorizontalIcon, PlusIcon} from "lucide-react";
 import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod"
+import SalesTableDropDown from "./table-dropdown-menu";
 
 const formSchema = z.object({
   productId : z.string().uuid({
@@ -34,7 +35,7 @@ interface SelectedProduct {
   quantity:number
 }
 const UpsertSheetDialogContent = ({products, productOptions}: UpsertSheetContentProps) =>{
- const [selectedProducts, setSelectedProducts] =useState<SelectedProduct[]>([])
+ const [selectedProducts, setSelectedProducts] = useState<SelectedProduct[]>([])
 
   const form = useForm<FormSchema>({
     resolver:zodResolver(formSchema),
@@ -77,6 +78,12 @@ const UpsertSheetDialogContent = ({products, productOptions}: UpsertSheetContent
       ]
    })
    form.reset() 
+  }
+
+  const onDelete = (productId: string) => {
+   setSelectedProducts((currentProducts) =>{
+    return currentProducts.filter(product => product.id !== productId)
+   })
   }
   return(
     <SheetContent className="!max-w-[600px]">
@@ -136,6 +143,7 @@ const UpsertSheetDialogContent = ({products, productOptions}: UpsertSheetContent
           <TableHead>Quantidade</TableHead>
           <TableHead>Valor</TableHead>
           <TableHead>total</TableHead>
+          <TableHead>Ações</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -145,6 +153,9 @@ const UpsertSheetDialogContent = ({products, productOptions}: UpsertSheetContent
             <TableCell>{product.quantity}</TableCell>
             <TableCell>{formatCurrency(product.price)}</TableCell>
             <TableCell >{formatCurrency(product.price * product.quantity)}</TableCell>
+            <TableCell >
+            <SalesTableDropDown product={product} onDelete={onDelete}/>
+              </TableCell>
           </TableRow>
         ))}
       </TableBody>
@@ -152,6 +163,7 @@ const UpsertSheetDialogContent = ({products, productOptions}: UpsertSheetContent
         <TableRow >
           <TableCell colSpan={3}>Total</TableCell>
           <TableCell >{formatCurrency(valueProductsTotal)}</TableCell>
+          <TableCell/>
         </TableRow>
       </TableFooter>
     </Table>
